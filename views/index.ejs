@@ -1,8 +1,52 @@
+<div class=content>
 <h1><%= title %></h1>
 <p>Welcome to <%= title %></p>
 
+<div>
+<h3>Contents</h3>
 <ul>
   <li>
     <a href="get_user_media">getUserMedia test</a>
   </li>
+  <li>
+    <a href="server_test.html">p2p test</a><br>
+
+    <div class=instruction>
+    <ol>
+      <li>svn checkout http://webrtc.googlecode.com/svn/trunk/ webrtc-read-only</li>
+      <li>cd webrtc-read-only/peerconnection</li>
+      <li>gyp --depth peerconnection.gyp</li>
+      <li>build & run in XCode, then peerconnection_server will executed</li>
+      (URL is http://localhost:8888）
+    </ol>
+    </div>
+  </li>
 </ul>
+</div>
+
+<h3>message between client and PeerConnection server</h3>
+<dl>
+<dt>base protocol</dt>
+<dd>HTTP (long-polling model)</dd>
+<dt>messages</dt>
+<dd>sign_in, wait, sign_out</dd>
+<dt>sample body in above messages</dt>
+<dd>
+  <dl>
+  <dt>sign_in</dt>
+  <dd>
+  <pre class=prettyprint>
+komasshu,4,1
+my_name,1,1</pre>
+  <dt>wait</dt>
+  <dd>
+  <b>if user 'my_name' disconnected</b>
+  <pre class=prettyprint>my_name,1,0</pre>
+  <b>if user 'kom' connected</b>
+  <pre class=prettyprint>kom,5,1</pre>
+  </dd>
+  <dt>sign_out</dt>
+  <dd></dd>
+  </dl>
+</dd>
+</dl>
