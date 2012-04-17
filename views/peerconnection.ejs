@@ -1,0 +1,163 @@
+<div class=content>
+<h1><a href="/"><%= title %></a></h1>
+<h2><%= subtitle %></h2>
+<p>Welcome to <%= title %></p>
+
+<h3>demo</h3>
+<button class=start>start telephony</button><br>
+<video id=local autoplay></video>
+<video id=remote autoplay></video>
+<output></output>
+
+<hr>
+<textarea style="width:100%; height: 10em" readonly id=console></textarea>
+<section>
+
+<p>This demo site was checked with Chrome (18 or above). Please be sure that opening chrome://flags and enable getUserMedia (webrtc features are now experimental stage.</p>
+
+
+
+</section>
+
+
+
+<h3>code</h3>
+<pre class="prettyprint">
+</pre>
+
+
+</div>
+
+
+
+<script id="rtc">
+$(function(){
+    var localStream, pc, ws;
+
+    // functions for getUserMedia...
+    ////////////////////////////////////
+    function getUserMedia(){
+      navigator.webkitGetUserMedia("video,audio", onGUMSuccess, onGUMError);
+    }
+
+    function onGUMSuccess(stream){
+      logger("GetUserMedia() Succeed");
+      var url = webkitURL.createObjectURL(stream);
+      $("video#local")[0].src = url;
+      localStream = stream;
+
+      $("button.start").one('click', function(e){
+        console.log('start!!');
+        $(this).attr("disabled", "true");
+        createPeerConnection();
+      });
+    }
+    function onGUMError(e) {
+      console.log("GetUserMedia Error"+e);
+    }
+
+    function createPeerConnection() {
+      logger("attempt to create peerConnection");
+      // pc = new webkitPeerConnection("STUN stun.l.google.com:19302", onSignalingMessage);
+      pc = new webkitDeprecatedPeerConnection("STUN stun.l.google.com:19302", onSignalingMessage);
+
+      pc.addStream(localStream);
+
+      // set handlers for peerconnection events
+      pc.onconnecting = onSessionConnecting;
+      pc.onopen = onSessionOpened;
+      pc.onaddstream = onRemoteStreamAdded;
+      pc.onremovestream = onRemoteStreamRemoved;
+    }
+
+    function onSignalingMessage(mesg) {
+      logger("receive signaling message");
+
+      // send SDP message to session server.
+      //////////////////////////////////////
+
+      sendMessage(mesg);
+    }
+
+    function sendMessage(data) {
+      logger("=====================================");
+      logger("C=>S");
+      logger("---");
+      logger(data);
+      logger("=====================================");
+
+      ws.send(data);
+    }
+
+    // Handlers for peerconnection events.
+    ///////////////////////////////////////
+    function onSessionConnecting(e) {
+      logger("onSessionConnecting...");
+    }
+
+    function onSessionOpened(e) {
+      logger("onSessionOpened...");
+    }
+
+    function onRemoteStreamAdded(e) {
+      logger("onRemoteStreamAdded...");
+
+      var url = webkitURL.createObjectURL(event.stream);
+      $("video#remote")[0].src = url;
+    }
+
+    function onRemoteStreamRemoved(e) {
+      logger("onRemoteStreamRemoved...");
+    }
+
+
+
+    // WebSocket
+    ////////////////////////////////
+
+    function startWebSocketConnection() {
+      ws = new WebSocket("ws://"+location.host);
+
+      ws.onopen = function(e){
+        console.log("websocket connection created");
+
+        getUserMedia();
+      }
+
+      ws.onmessage = function(e){
+        logger("=====================================");
+        logger("S=>C");
+        logger("---");
+        logger(e.data);
+        logger("=====================================");
+
+
+        if(!!pc === false) {
+          createPeerConnection();
+        }
+
+        pc.processSignalingMessage(e.data);
+      }
+    }
+
+
+    // utility
+    function logger(str){
+      var b = $("textarea#console").val();
+      $("textarea#console").val(b+str+"\n");
+    }
+
+    function start(){
+      startWebSocketConnection();
+    }
+
+    start();
+}());
+</script>
+
+<!-- display sample code inside <pre> -->
+<script>
+var code = $("#rtc").text().replace(/</g, "&lt;").replace(/>/g, "&gt");
+$("pre").html(code);
+prettyPrint();
+</script>

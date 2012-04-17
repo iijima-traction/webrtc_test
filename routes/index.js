@@ -9,3 +9,6 @@ exports.index = function(req, res){
 exports.get_user_media = function(req, res){
   res.render('get_user_media', { title: 'WebRTC sample', subtitle: 'getUserMedia' })
 };
+exports.peerconnection = function(req, res){
+  res.render('peerconnection', { title: 'WebRTC sample', subtitle: 'peerconnection' })
+};

@@ -7,6 +7,9 @@
 <h3>demo</h3>
 <video controls autoplay></video>
 <output></output>
+<section>
+<p>This demo site was checked with Chrome (18 or above). Please be sure that opening chrome://flags and enable getUserMedia (webrtc features are now experimental stage.</p>
+</section>
 </div>
 
 <div class=right>
@@ -39,7 +42,7 @@ $(function(){
   // Replace the source of the video element with the stream from the camera
   navigator.getUserMedia_ = navigator.getUserMedia || navigator.webkitGetUserMedia;
   if(!!navigator.getUserMedia_ !== false) {
-    navigator.getUserMedia_("video audio", successCallback, errorCallback);
+    navigator.getUserMedia_("video", successCallback, errorCallback);
     function successCallback(stream) {
       video.src = window.webkitURL ?
         window.webkitURL.createObjectURL(stream) :
@@ -51,7 +54,14 @@ $(function(){
     }
   } else {
     console.log('Native web camera streaming (getUserMedia) is not supported in this browser.');
-    $('output').html('Sorry, your browser doesn\'t support getUserMedia');
+    $('output').html('Sorry, your browser doesn\'t support getUserMedia. ')
+      .append('<p>Try Chrome canary or dev channel ')
+      .append('with enabling MediaStream at chrome://flags ')
+      .append('(To be sure that it is now experimental ')
+      .append("and don't forget to set --enable-media-stream ")
+      .append("as a execute parameter)")
+      .append('</p>')
+
     return;
   }
 });
@@ -59,7 +69,7 @@ $(function(){
 
 <!-- display sample code inside <pre> -->
 <script>
-var code = $("#rtc").text().replace("<", "&lt;").replace(">", "&gt");
+var code = $("#rtc").text().replace(/</g, "&lt;").replace(/>/g, "&gt");
 $("pre").html(code);
 prettyPrint();
 </script>
