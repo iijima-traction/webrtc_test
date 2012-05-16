@@ -42,7 +42,12 @@ $(function(){
   // Replace the source of the video element with the stream from the camera
   navigator.getUserMedia_ = navigator.getUserMedia || navigator.webkitGetUserMedia;
   if(!!navigator.getUserMedia_ !== false) {
-    navigator.getUserMedia_("video", successCallback, errorCallback);
+    try {
+      navigator.getUserMedia_("video", successCallback, errorCallback);
+    } catch(e) {
+      navigator.getUserMedia_({video:true}, successCallback, errorCallback);
+    }
+
     function successCallback(stream) {
       video.src = window.webkitURL ?
         window.webkitURL.createObjectURL(stream) :
