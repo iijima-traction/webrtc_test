@@ -37,7 +37,7 @@ $(function(){
     // functions for getUserMedia...
     ////////////////////////////////////
     function getUserMedia(){
-      navigator.webkitGetUserMedia("video,audio", onGUMSuccess, onGUMError);
+      navigator.webkitGetUserMedia({video: true, audio: true, toString: function(){return "video,audio"}}, onGUMSuccess, onGUMError);
     }
 
     function onGUMSuccess(stream){

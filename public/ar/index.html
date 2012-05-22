@@ -39,9 +39,11 @@ if (!createObjectURL) {
 }
 
 try {
-  getUserMedia('video',
+  getUserMedia({video: true, toString: function(){ return "video" }},
     function(stream) {
-      var url = createObjectURL(stream);
+      // var url = createObjectURL(stream);
+      var url = window.webkitURL ? window.webkitURL.createObjectURL(stream) : stream;
+
       video.src = url;
     },
     function(error) {
@@ -49,15 +51,7 @@ try {
     }
   );
 } catch(e) {
-  getUserMedia({video:true},
-    function(stream) {
-      var url = createObjectURL(stream);
-      video.src = url;
-    },
-    function(error) {
-      alert("Couldn't access webcam.");
-    }
-  );
+  console.log(e);
 }
 
 

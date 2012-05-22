@@ -43,9 +43,9 @@ $(function(){
   navigator.getUserMedia_ = navigator.getUserMedia || navigator.webkitGetUserMedia;
   if(!!navigator.getUserMedia_ !== false) {
     try {
-      navigator.getUserMedia_("video", successCallback, errorCallback);
+      navigator.getUserMedia_({"video": true, toString: function(){return "video"}}, successCallback, errorCallback);
     } catch(e) {
-      navigator.getUserMedia_({video:true}, successCallback, errorCallback);
+      console.log(e);
     }
 
     function successCallback(stream) {
